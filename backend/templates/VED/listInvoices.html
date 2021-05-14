@@ -1,0 +1,56 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fav and touch icons -->
+
+    <title>VED Invoice(s)</title>
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'assets/bootstrap/css/bootstrap.css'%}" rel="stylesheet">
+
+    <link href="{% static 'assets/css/style.css'%}" rel="stylesheet">
+
+    <link href="{% static 'assets/css/invoice.css'%}" rel="stylesheet">
+    <link rel='stylesheet' type='text/css' href='css/print.css' media="print" />
+
+
+    <script>
+        paceOptions = {
+            elements: true
+        };
+    </script>
+    <script src="{% static 'assets/js/pace.min.js' %}"></script>
+
+    <style>
+
+
+    </style>
+</head>
+<body>
+
+    <div class="container main-container headerOffset">
+
+        <div class=" invoice-wrapper content">
+            <table>
+                <tr>
+                    <th>Invoices</th>
+                </tr>
+
+                {% for printI in prints %}
+
+                    <tr>
+                        <td> <a target="_blank" href="{{printI.link}}"> {{printI.name}} </a> <td>
+                    </tr> 
+
+                {% endfor %}
+            </table>
+        </div>
+
+    </div>
+    
+</body>
+</html>

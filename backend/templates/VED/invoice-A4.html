@@ -1,0 +1,331 @@
+{% load static %}
+{% load mathfilters %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fav and touch icons -->
+
+    <title>VED Invoice</title>
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'assets/bootstrap/css/bootstrap.css'%}" rel="stylesheet">
+
+    <link href="{% static 'assets/css/style.css'%}" rel="stylesheet">
+
+    <link href="{% static 'assets/css/invoice.css'%}" rel="stylesheet">
+    <link rel='stylesheet' type='text/css' href='css/print.css' media="print" />
+
+
+    <script>
+        paceOptions = {
+            elements: true
+        };
+    </script>
+    <script src="{% static 'assets/js/pace.min.js' %}"></script>
+
+    <style>
+
+
+    </style>
+
+
+</head>
+
+<body>
+    {% for ord in context %}
+        <div class="container main-container headerOffset">
+
+            <div class=" invoice-wrapper content">
+
+                <div class="row">
+                    <div class="col-lg-12 col-xs-12 col-sm-12 col-xs-12">
+                        <h1 class="section-title-inner"><span><i class="fa fa-print"></i> Your Invoice </span></h1>
+
+                        <div class="row userInfo">
+                            <div class="col-lg-12">
+                                <h2 class="block-title-2"> Your Invoice Details </h2>
+                            </div>
+
+
+                            <div class="col-sm-12 invTop">
+                                <table class="w100">
+                                    <tr>
+                                        <td>
+                                            <div class="invInfo text-left">
+
+                                                <h3 class="text-uppercase"><span><strong>Invoice :</strong> </span>
+                                                    <span>{{ord.invoiceNumber}}</span>
+                                                </h3>
+                                                
+                                                <h3 class="text-uppercase"><span><strong>Order :</strong> </span>
+                                                    <span>{{ord.orderNumber}}</span>
+                                                </h3>
+
+                                                <p><span><strong>Invoice Date :</strong></span><span>
+                                                        {{ord.order.creationDate|date:"m/d/Y"}} </span></p>
+
+                                                {% comment %} <p><span><strong>Due Date :</strong></span><span> 6/30/2016
+                                                    </span></p> {% endcomment %}
+
+                                                <p><span> <strong>Status: </strong></span>
+                                                    <span>
+                                                        {% if ord.order.refundId %}
+                                                        Refunded, ID : {{ ord.order.refundId }}
+                                                        {% else %}
+                                                        Paid
+                                                        {% endif %}
+                                                    </span>
+                                                </p>
+
+                                            </div>
+
+                                        </td>
+                                        <td>
+
+                                            <div class="invCompany text-right">
+                                                <img src="{% static 'images/brand/12.jpg'%}" alt="Company" height="100"
+                                                    width="150">
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+                                </table>
+                                <hr class="invHr">
+                            </div>
+                            <div class="col-lg-6 col-sm-6 col-xs-12 col-md-6">
+                                <div class="order-box">
+                                    <div class="order-box-header">
+
+                                        Client Information:
+                                    </div>
+
+
+                                    <div class="order-box-content">
+                                        <div class="address">
+
+                                            <p> <strong> {{ ord.order.user.username }} </strong><br>
+                                                {{ ord.order.deliveryAdress }}<br>
+                                                {{ord.order.deliveryCity}}, {{order.deliveryState}}
+                                                {{ord.order.deliveryZipCode}}<br>
+
+                                                Phone {{ord.order.deliveryMobileNumber}}<br>
+                                                Email: {{ ord.order.user.email }}<br>
+                                                {% comment %} Company: Brooks Fashions {% endcomment %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-lg-6 col-sm-6 col-xs-12 col-md-6">
+                                <div class="order-box">
+                                    <div class="order-box-header">
+                                        Peyment To:
+                                    </div>
+                                    <div class="order-box-content">
+                                        <div class="address">
+                                            <p> <strong> {{ ord.order.user.username }} </strong><br>
+                                                {{ ord.order.billingAdress }}<br>
+                                                {{ord.order.billingCity}}, {{ord.order.deliveryState}} {{ord.order.deliveryZipCode}}<br>
+
+                                                Phone {{ord.order.billingMobileNumber}}<br>
+                                                Email: {{ ord.order.user.email }}<br>
+                                                {% comment %} Company: Brooks Fashions {% endcomment %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="clear: both"></div>
+
+
+                            <div class="col-lg-12 col-sm-12 col-xs-12 col-md-12 clearfix">
+                                <div class="order-box invTable">
+
+                                    <div class="order-box-header">
+
+                                        Invoice Details
+
+                                    </div>
+
+                                    <div class="order-box-content ">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <caption>Optional table caption.</caption>
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Product</th>
+                                                        <th>Description</th>
+                                                        <th>Quantity</th>
+                                                        <th>Unit Cost</th>
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    {% for productOrder in ord.order.orderList %}
+                                                    <tr>
+                                                        <th scope="row">1</th>
+                                                        <td>{{ productOrder.product.title }}</td>
+                                                        <td> {{ productOrder.product.description }} <br>
+                                                            <small> {{ productOrder.uom.value|stringformat:".2f" }}{{ productOrder.uom.unit }}, 
+                                                            {% for variation in productOrder.chosenVariations.all %} 
+                                                            
+                                                                {{variation.content}},
+
+                                                            {% endfor %}
+                                                            </small>
+
+                                                        </td>
+                                                        <td> {{ productOrder.quantity }} </td>
+                                                        <td> RM {{ productOrder.unitPrice|stringformat:".2f"}} </td>
+                                                        <td> RM {{ productOrder.price|stringformat:".2f" }} </td>
+                                                    </tr>
+                                                    {% endfor %}
+
+
+                                                    <tr class="invTableFooter">
+                                                        <td colspan="6">
+                                                            <table width="200" cellspacing="0" cellpadding="6" border="0"
+                                                                align="right">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td valign="middle" align="left" class="">
+                                                                            <div style="">
+                                                                                <span>
+                                                                                    Subtotal
+                                                                                </span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td valign="middle" align="right" class="">
+                                                                            <div>
+                                                                                <span>
+                                                                                    RM {{ ord.order.subTotal|stringformat:".2f"}}
+                                                                                </span>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td valign="middle" align="left" class="" style="">
+                                                                            <div style="">
+                                                                                <span>
+                                                                                    Tax
+                                                                                </span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td valign="middle" align="right"
+                                                                            class="title_color">
+                                                                            <div>
+                                                                                <span class="text_container">
+                                                                                    RM {{ord.order.estimatedTax|stringformat:".2f" }}
+                                                                                </span>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td valign="middle" align="left" class="" style="">
+                                                                            <div style="">
+                                                                                <span>
+                                                                                    Shipping
+                                                                                </span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td valign="middle" align="right"
+                                                                            class="title_color">
+                                                                            <div>
+                                                                                <span class="text_container">
+                                                                                    RM {{ord.order.shipping|stringformat:".2f" }}
+                                                                                </span>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td valign="middle" align="left" class="" style="">
+                                                                            <div style="">
+                                                                                <span>
+                                                                                    Promo
+                                                                                </span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td valign="middle" align="right"
+                                                                            class="title_color">
+                                                                            <div>
+                                                                                <span class="text_container">
+                                                                                    RM {{ord.order.promo|stringformat:".2f" }}
+                                                                                </span>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr bgcolor="#ECF0F1" class="price">
+                                                                        <td valign="middle" align="left">
+                                                                            <div>
+                                                                                <span class="">
+                                                                                    Total
+                                                                                </span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style="text-align: right">
+                                                                            <div>
+                                                                                <span class="price-total">
+                                                                                    RM {{ ord.order.total|stringformat:".2f" }}
+                                                                                </span>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div style="clear: both"></div>
+
+
+                            
+                        </div>
+                        <!--/row end-->
+
+                    </div>
+                </div>
+
+
+            </div>
+
+
+        </div>
+    {% endfor %}
+
+    <div class="col-lg-12 clearfix hidePrint">
+        <ul class="pager">
+            <li class="previous pull-right"><a class="btn btn-print"
+                    onclick="javascript:window.print();"> <i class="fa fa-print"></i> Print </a>
+            </li>
+
+        </ul>
+    </div>
+
+    <footer>
+    </footer>
+    <!-- include custom script for site  -->
+    <script src="{% static 'assets/js/script.js'%}"></script>
+</body>
+
+</html>
